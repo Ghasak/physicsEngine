@@ -7,168 +7,72 @@ from rich.console import Console
 #from rich import print as rprint
 #import numpy as np
 
+# Import our implementation
+from src.concepts.vectors_fundamentals.vector_class import CVector2d
+from src.Tools.pygame_debuger import debug,show_information, show_position_vector
+from src.stats.Constants import PYGAME_CONFIG
+from src.stats.Constants import COLOR_PALETTE
+# ---------- implementation ----------------
 console = Console()
 
-# Intializing the
+# Intialize the pygame
 pygame.init()
 pygame.font.init()
+# font =pygame.font.Font(None, 30)
+
+
+# ---------- Pygame characteristics ----------------
+screen = pygame.display.set_mode((PYGAME_CONFIG['WIDTH'], PYGAME_CONFIG['HIGHT']))
+clock = pygame.time.Clock()
 
 
 
-class CVector2d(object):
-    CONFIG = {'num_of_vec': 0}
+# ---------- Main Loop ----------------
+while True:
+    dt = clock.tick(60)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
 
-    def __init__(self, x: Union[int, float] = 0.0, y: Union[int, float] = 0.0, verbose: bool = False):
-        self._x = x
-        self._y = y
-        self._verbose = verbose
-        CVector2d.CONFIG['num_of_vec'] += 1
-        self.vector_id = CVector2d.CONFIG['num_of_vec']
+    screen.fill(COLOR_PALETTE['black'])
 
-    def __str__(self):
-        return f"Custom Vec {self.vector_id}: <{self._x},{self._y}>"
-    # Change the logging level by accessing the verbose boolian
-
-    @property
-    def verbose(self):
-        console.log(
-            f"We currently verbosely showing messages: {self._verbose}")
-        return self._verbose
-
-    @verbose.setter
-    def verbose(self, selection: bool):
-        if isinstance(selection, bool):
-            self._verbose = selection
-
-    # Component proerpty of x - coordinate
-    @property
-    def x(self):
-        if self._verbose:
-            console.log(
-                f"Obtain the x coordinate from vector{self.vector_id}: <{self._x},{self._y}>")
-        return self._x
-
-    @x.setter
-    def x(self, value):
-        if self._verbose:
-            console.log(
-                f"setting the x coordinate from vector{self.vector_id}: <{self._x},{self._y}> to {value}, it will give us: <{self.x + value},{self.y}>")
-        # return CVector2d(self._x + value, self._y)
-        self._x = value
-
-    # Component proerpty of y - coordinate
-    @property
-    def y(self):
-        if self._verbose:
-            console.log(
-                f"Obtain the y coordinate from vector{self.vector_id}: <{self._x},{self._y}>")
-        return self._y
-
-    @y.setter
-    def y(self, value):
-        if self._verbose:
-            console.log(
-                f"setting the y coordinate from vector{self.vector_id}: <{self._x},{self._y}> to {value}, it will give us: <{self.x},{self.y + value}>")
-        self._y = value
-
-    # Delete the vector once it is finished to free memeory
-    def remove(self):
-        if self._verbose:
-            console.log(
-                f"Vector {self.vector_id}: <{self._x},{self._y}> is removed ...")
-        del self
-    # adding the arithemtatics operations to the our vector
-
-    def __add__(self, other):
-        if isinstance(other, CVector2d):
-            return CVector2d(self.x + other.x, self.y + other.y)
-        elif isinstance(other, (int, float)):
-            return CVector2d(self.x + other, self.y + other)
-        else:
-            raise TypeError(
-                "Unsupported operand type(s) for +: `Vector` and `{}`".format(type(other)))
-
-    def __radd__(self, other):
-        return self + other
-
-    def __sub__(self, other):
-        if isinstance(other, CVector2d):
-            return  CVector2d(self.x - other.x, self.y - other.y)
-        elif isinstance(other, (int, float)):
-            return  CVector2d(self.x - other, self.y - other)
-        else:
-            raise TypeError("unsupported operand type(s) for -: 'Vector' and '{}'".format(type(other)))
-
-    def __rsub__(self, other):
-        if isinstance(other, (int, float)):
-            return CVector2d(other - self.x, other - self.y)
-        else:
-            raise TypeError("unsupported operand type(s) for -: '{}' and 'Vector'".format(type(other)))
-
-    def __truediv__(self, other):
-        if isinstance(other, CVector2d):
-            return CVector2d(self.x / other.x, self.y / other.y)
-        elif isinstance(other, (int, float)):
-            return CVector2d(self.x / other, self.y / other)
-        else:
-            raise TypeError("unsupported operand type(s) for /: 'Vector' and '{}'".format(type(other)))
-
-    def __rtruediv__(self, other):
-        if isinstance(other, (int, float)):
-            return CVector2d(other / self.x, other / self.y)
-        else:
-            raise TypeError("unsupported operand type(s) for /: '{}' and 'Vector'".format(type(other)))
-
-    def __mul__(self, other):
-        if isinstance(other, CVector2d):
-            return CVector2d(self.x * other.x, self.y * other.y)
-        elif isinstance(other, (int, float)):
-            return CVector2d(self.x * other, self.y)
-
-    def magnitude(self):
-        '''This will give us the magnitude of a position vector from the origin <0,0>'''
-        return math.sqrt(self.x ** 2 + self.y ** 2)
-
-    def magnitude_from(self, other):
-        '''This will give us the magnitude of a displacement vector which consturcted between two positional vectors from the original'''
-        if isinstance(other,CVector2d):
-            return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
-        else:
-            raise TypeError(f"Not supported for: {type(other)}, you should provide a vector of a type of {self.__class__.__name__} to the magnitude_from() method")
-
-    def rotate(self, angle):
-        x = self.x * math.cos(angle) - self.y * math.sin(angle)
-        y = self.x * math.sin(angle) + self.y * math.cos(angle)
-        self.x = x
-        self.y = y
-        #return CVector2d(self.x , self.y)
-        # We will return the self, as we alter the vector by a rotation.
-        return self
+    # This will get us at each frame the position vector of a mouse
+    mouse_position = pygame.Vector2(pygame.mouse.get_pos())
+    #pygame.draw.line(screen, 'blue', (0,0), (vec3), 3)
+    path= pygame.Vector2(200, 60)
+    pos= pygame.Vector2(100,200)
 
 
-def testing():
-    a = CVector2d(x=0, y=1, verbose=False)
-    b = CVector2d(x=200.0, y=300.0, verbose=False)
-    # console.log(a)
-    # console.log(a.x)
-    # console.log(a.y)
-    # a.x = 20.0
-    # console.log(a)
-    # console.log(a.remove())
-    # console.log(a.verbose)
-    # a.verbose = False
-    # console.log(a.verbose)
-    # console.log(a)
-    # console.log(a.x, a.y)
-    # notice here we will use the __add__ method, with CVector2d instance
-    console.log(a + b)
-    # notice here we will use the __add__ method, with int type
-    console.log(a + 20)
-    # notice here we will use the __radd__ method
-    console.log(30 + a)
-    console.log(a.magnitude_from(b))
-    console.log(a.magnitude())
-    console.log(a.rotate(math.pi/2.0))
+    head = pygame.Vector2(path + pos)
+    # pygame.draw.line(screen, 'black', pos, head, 3)
 
-testing()
+    a = mouse_position - pos
+    pygame.draw.line(screen, COLOR_PALETTE['red'], pos, a + pos, 3)
+    pygame.draw.line(screen, COLOR_PALETTE['red'], pos,head, 3)
+
+    #v =pygame.math.Vector2.project(a,path)
+    a_dash =  CVector2d.converate_pygame_vector_to_cvector2d(a)
+    path_dash =  CVector2d.converate_pygame_vector_to_cvector2d(path)
+    #v = CVector2d.project(a,path)
+    v1 = CVector2d.project(a_dash,path_dash)
+    # You can also use
+
+    #v2 = a_dash.vectorProjection(path_dash)
+    v2 =CVector2d.vectorProjection( a_dash,path_dash)
+    v = CVector2d.converate_cvector2d_to_pygame_vector(v2)
+    pygame.draw.line(screen, 'deepskyblue4', v + pos, mouse_position, 5)
+    pygame.draw.line(screen, 'deepskyblue4', pos,v + pos, 5)
+
+    show_position_vector(screen = screen ,vec = mouse_position, text ="Vector M ->")
+    show_position_vector(screen = screen ,vec = pos, text ="Vector pos ->")
+    show_position_vector(screen = screen ,vec = pos + path, text ="Vector path ->")
+
+
+
+
+    debug(f"time detla {dt} in milliseconds")
+    pygame.display.update()
+    clock.tick(60)
+
 
