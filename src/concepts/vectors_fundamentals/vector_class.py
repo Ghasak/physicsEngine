@@ -117,7 +117,7 @@ class CVector2d(object):
         if isinstance(other, CVector2d):
             return CVector2d(self.x * other.x, self.y * other.y)
         elif isinstance(other, (int, float)):
-            return CVector2d(self.x * other, self.y)
+            return CVector2d(self.x * other, self.y * other)
     def __rmul__(self, other):
         return CVector2d(self.x * other, self.y * other)
 
@@ -137,8 +137,6 @@ class CVector2d(object):
         y = self.x * math.sin(angle) + self.y * math.cos(angle)
         self.x = x
         self.y = y
-        #return CVector2d(self.x , self.y)
-        # We will return the self, as we alter the vector by a rotation.
         return self
 
     @staticmethod
@@ -159,23 +157,27 @@ class CVector2d(object):
         return CVector2d(projection_x, projection_y)
 
     def vectorProjection(self, other):
-        bCopy = other.copy().normalize()
-        sp = self.dot(bCopy)
-        bCopy = bCopy * sp
-        #console.log(bCopy.length())
         c = self.dot(other)/(other.magnitude())**2
         d = c * other
-        # console.log("are they equal ? ", bool(d == bCopy))
-        #return bCopy
         return d
 
 
+    def vectorProjection2(self, other):
+        bCopy = other.copy()
+        bCopy = bCopy.normalize()
+        sp = self.dot(bCopy)
+        bCopy_new = bCopy * sp
+        return bCopy_new
 
-
-
-
-
-
+    @staticmethod
+    def vectorProjection_static(a,b):
+        bCopy = b.copy().normalize()
+        console.log(f"bCopy by applying copy and normalize{bCopy}")
+        sp =a.dot(bCopy)
+        console.log(f"value of sp -> {sp}")
+        bCopy= bCopy * sp
+        console.log(f"Value of bCopy_new -> {bCopy}")
+        return bCopy
 
     def normalize(self):
         magnitude = self.magnitude()
@@ -183,7 +185,7 @@ class CVector2d(object):
             raise ZeroDivisionError("Cannot normalize vector with magnitude 0")
         self.x /= magnitude
         self.y /= magnitude
-        return self
+        return CVector2d(self.x, self.y)
 
     def copy(self):
         return CVector2d(self.x, self.y)
@@ -211,6 +213,16 @@ def testing():
     console.log(a.magnitude_from(b))
     console.log(a.magnitude())
     console.log(a.rotate(math.pi/2.0))
+    a = CVector2d(10,10)
+    b = CVector2d(20,30)
+
+    c = pygame.Vector2(10,10)
+    d = pygame.Vector2(20,30)
+
+    console.log(CVector2d.vectorProjection(a,b))
+    console.log(a.vectorProjection(b))
+    console.log(a.vectorProjection2(b))
+    console.log(c.project(d))
 
 
 if  __name__ == "__main__":
