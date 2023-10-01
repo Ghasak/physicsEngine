@@ -16,6 +16,7 @@ COLOR_PALETTE = {
         'gray': "#abb0d8",
         'light_gray':"#e7e7e7",
         'light_blue': "#abb0d8",
+        'orange': "#b67340",
 
         }
 

@@ -34,5 +34,6 @@ def show_position_vector(screen, vec, text):
     pygame.draw.circle(screen, "deeppink", vec, POINT_FEATURES["radius"])
     show_information(
         f"Pos:{text} <{vec.x:2.2f},{vec.y:2.2f}>",
-        (vec.x - POINT_FEATURES["offset_x"], vec.y + POINT_FEATURES["offset_y"]),
+        (vec.x - POINT_FEATURES["offset_x"],
+         vec.y + POINT_FEATURES["offset_y"]),
     )
